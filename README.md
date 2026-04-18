@@ -1,6 +1,12 @@
 # SoCal Drone Companion
 
+> **Clean Drones — even accountants need hobbies!**
+
 A drone-flying companion map for Southern California recreational pilots.
+
+## About
+
+This is a hobby project by the team behind **Clean by Nerd Enterprises**, the software dev division of Nerd Enterprises, Inc. Our day job is Clean Books, a product for accountants and bookkeepers. This is what we build on the side — something we actually use ourselves when planning a flight.
 
 ## Purpose
 
