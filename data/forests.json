@@ -1,0 +1,58 @@
+[
+  {
+    "id": "los-padres-nf",
+    "name": "Los Padres National Forest",
+    "shape": "polygon",
+    "geometry": [[35.30, -120.00], [35.35, -119.30], [34.80, -119.10], [34.50, -119.40], [34.45, -119.85], [34.65, -120.25], [35.10, -120.20]],
+    "popup": {
+      "title": "Los Padres National Forest",
+      "lines": [
+        "USFS — drones generally allowed in non-wilderness areas",
+        "Wilderness areas (Sespe, Matilija, etc.) prohibit drones",
+        "Avoid takeoff/landing within 100ft of trailheads/campgrounds"
+      ],
+      "warning": null
+    },
+    "verified": "2026-04-18",
+    "source": null
+  },
+  {
+    "id": "angeles-nf",
+    "name": "Angeles National Forest",
+    "shape": "polygon",
+    "geometry": [[34.45, -118.55], [34.40, -117.65], [34.20, -117.55], [34.20, -117.85], [34.30, -118.30], [34.35, -118.55]],
+    "popup": {
+      "title": "Angeles National Forest",
+      "lines": ["USFS — generally allowed except wilderness"],
+      "warning": "Much of this is under LA Basin airspace — check Aloft"
+    },
+    "verified": "2026-04-18",
+    "source": null
+  },
+  {
+    "id": "san-bernardino-nf",
+    "name": "San Bernardino National Forest",
+    "shape": "polygon",
+    "geometry": [[34.35, -117.30], [34.40, -116.65], [34.05, -116.65], [33.95, -116.95], [34.05, -117.30]],
+    "popup": {
+      "title": "San Bernardino National Forest",
+      "lines": ["USFS — allowed except wilderness"],
+      "warning": null
+    },
+    "verified": "2026-04-18",
+    "source": null
+  },
+  {
+    "id": "cleveland-nf",
+    "name": "Cleveland National Forest",
+    "shape": "polygon",
+    "geometry": [[33.75, -117.45], [33.75, -117.10], [33.45, -117.05], [33.45, -117.50]],
+    "popup": {
+      "title": "Cleveland National Forest",
+      "lines": ["USFS — allowed except wilderness"],
+      "warning": null
+    },
+    "verified": "2026-04-18",
+    "source": null
+  }
+]

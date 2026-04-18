@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoCal Drone Zones — Seth's Map</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; background: #f7f6f3; color: #1a1a1a; }
+  .header { padding: 12px 16px; background: white; border-bottom: 1px solid #e5e5e5; }
+  .title { font-size: 16px; font-weight: 600; margin: 0 0 4px; }
+  .subtitle { font-size: 12px; color: #666; margin: 0; }
+  .controls { display: flex; gap: 6px; padding: 10px 16px; background: white; border-bottom: 1px solid #e5e5e5; flex-wrap: wrap; }
+  .btn { background: white; border: 1px solid #d0d0d0; padding: 6px 12px; font-size: 13px; border-radius: 6px; cursor: pointer; color: #1a1a1a; font-family: inherit; transition: background 0.15s; }
+  .btn:hover { background: #f0f0f0; }
+  .btn.active { background: #2563eb; border-color: #2563eb; color: white; }
+  #map { height: 60vh; width: 100%; min-height: 400px; }
+  .legend { display: flex; gap: 16px; padding: 8px 16px; background: white; border-top: 1px solid #e5e5e5; flex-wrap: wrap; font-size: 11px; color: #555; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .swatch { width: 12px; height: 12px; border-radius: 2px; border: 1px solid rgba(0,0,0,0.15); flex-shrink: 0; }
+  .swatch-circle { border-radius: 50%; }
+  .leaflet-popup-content { font-family: inherit; margin: 10px 12px; max-width: 260px; }
+  .pt { font-weight: 600; font-size: 14px; margin: 0 0 6px; color: #1a1a1a; }
+  .pm { font-size: 12px; color: #555; margin: 3px 0; line-height: 1.45; }
+  .pm a { color: #2563eb; text-decoration: none; }
+  .pm a:hover { text-decoration: underline; }
+  .pw { font-size: 11px; color: #b91c1c; margin-top: 6px; font-style: italic; line-height: 1.4; }
+  .pm strong { color: #333; font-weight: 600; }
+  .directory { background: white; padding: 16px; border-top: 1px solid #e5e5e5; }
+  .dir-title { font-size: 14px; font-weight: 600; margin: 0 0 10px; color: #1a1a1a; }
+  .dir-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+  .dir-card { border: 1px solid #e5e5e5; border-radius: 6px; padding: 10px 12px; background: #fafafa; cursor: pointer; transition: background 0.15s, border-color 0.15s; }
+  .dir-card:hover { background: #f0f4ff; border-color: #2563eb; }
+  .dir-name { font-size: 13px; font-weight: 600; margin: 0 0 4px; color: #1a1a1a; }
+  .dir-meta { font-size: 11px; color: #666; margin: 2px 0; line-height: 1.4; }
+  .dir-meta a { color: #2563eb; text-decoration: none; }
+  .dir-meta a:hover { text-decoration: underline; }
+  .dir-meta strong { color: #444; }
+  @media (max-width: 600px) {
+    #map { height: 55vh; }
+    .title { font-size: 14px; }
+    .btn { padding: 5px 10px; font-size: 12px; }
+    .dir-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <p class="title">SoCal drone zones — within ~3 hours of Burbank</p>
+  <p class="subtitle">Toggle layers on the map. Click any zone or pin for details. Always verify with Aloft + on-site signage.</p>
+</div>
+
+<div class="controls">
+  <button class="btn active" id="dm-detailed">Detailed view</button>
+  <button class="btn" id="dm-simple">Simple (green only)</button>
+  <button class="btn" id="dm-ojai">Zoom to Ojai</button>
+  <button class="btn" id="dm-wide">Full region</button>
+</div>
+
+<div id="map"></div>
+
+<div class="legend">
+  <div class="legend-item"><span class="swatch" style="background:#dc2626;opacity:0.6"></span>No-fly zone</div>
+  <div class="legend-item"><span class="swatch" style="background:#eab308;opacity:0.6"></span>Forest (allowed, check)</div>
+  <div class="legend-item"><span class="swatch" style="background:#16a34a;opacity:0.6"></span>BLM / open</div>
+  <div class="legend-item"><span class="swatch swatch-circle" style="background:#16a34a"></span>Verified launch</div>
+  <div class="legend-item"><span class="swatch swatch-circle" style="background:#dc2626"></span>Looks good but no</div>
+  <div class="legend-item"><span class="swatch" style="background:#2563eb"></span>RC club field</div>
+</div>
+
+<div class="directory">
+  <p class="dir-title">RC club directory (AMA-chartered fields within ~3hr of Burbank)</p>
+  <div class="dir-grid" id="club-directory"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+(function() {
+  const map = L.map('map', { zoomControl: true }).setView([34.6, -118.5], 7);
+
+  const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles &copy; Esri', maxZoom: 18
+  });
+  const satelliteLabels = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+    attribution: '', maxZoom: 18
+  });
+  const satelliteGroup = L.layerGroup([satellite, satelliteLabels]);
+
+  const terrain = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenTopoMap (CC-BY-SA)',
+    maxZoom: 17, subdomains: 'abc'
+  });
+
+  const street = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors', maxZoom: 19
+  });
+
+  satelliteGroup.addTo(map);
+
+  const RED = '#dc2626', YELLOW = '#eab308', GREEN = '#16a34a';
+  const fs = (color, opacity) => ({ color: color, fillColor: color, fillOpacity: opacity || 0.25, weight: 1.5 });
+  const pop = (title, lines, warn) => {
+    let html = '<div class="pt">' + title + '</div>';
+    lines.forEach(l => html += '<div class="pm">' + l + '</div>');
+    if (warn) html += '<div class="pw">' + warn + '</div>';
+    return html;
+  };
+
+  const airspaceLayer = L.layerGroup();
+  L.polygon([[34.30,-118.95],[34.32,-118.30],[34.20,-117.85],[34.05,-117.55],[33.85,-117.55],[33.65,-117.65],[33.55,-118.05],[33.55,-118.45],[33.75,-118.85],[34.05,-118.95]], fs(RED, 0.30)).bindPopup(pop('LA Basin controlled airspace', ['LAX Class B + BUR/VNY/LGB/SNA Class C/D', 'Drone flight requires LAANC authorization (often denied at low altitudes)'], 'Approximate boundary — verify with Aloft')).addTo(airspaceLayer);
+  L.circle([34.4262, -119.8403], { radius: 8000, ...fs(RED, 0.30) }).bindPopup(pop('Santa Barbara (SBA) Class C', ['LAANC authorization required'])).addTo(airspaceLayer);
+  L.circle([34.2008, -119.2073], { radius: 6500, ...fs(RED, 0.30) }).bindPopup(pop('Oxnard (OXR) Class D', ['LAANC authorization required'])).addTo(airspaceLayer);
+  L.circle([35.4336, -119.0568], { radius: 8000, ...fs(RED, 0.30) }).bindPopup(pop('Bakersfield (BFL) Class C', ['LAANC authorization required'])).addTo(airspaceLayer);
+  L.circle([33.8297, -116.5067], { radius: 7000, ...fs(RED, 0.30) }).bindPopup(pop('Palm Springs (PSP) Class D', ['LAANC authorization required'])).addTo(airspaceLayer);
+  L.circle([32.7338, -117.1933], { radius: 18000, ...fs(RED, 0.30) }).bindPopup(pop('San Diego (SAN) Class B', ['Recreational flight heavily restricted'])).addTo(airspaceLayer);
+  L.circle([34.0560, -117.6012], { radius: 9000, ...fs(RED, 0.30) }).bindPopup(pop('Ontario (ONT) Class C', ['LAANC authorization required'])).addTo(airspaceLayer);
+
+  const npsLayer = L.layerGroup();
+  L.polygon([[34.18,-118.95],[34.18,-118.55],[34.10,-118.50],[34.00,-118.55],[34.00,-118.95],[34.10,-119.10]], fs(RED, 0.40)).bindPopup(pop('Santa Monica Mountains NRA', ['National Park Service unit', 'Drone takeoff/landing prohibited (36 CFR 1.5)'])).addTo(npsLayer);
+  L.polygon([[34.05,-119.95],[34.05,-119.35],[33.85,-119.35],[33.85,-119.95]], fs(RED, 0.40)).bindPopup(pop('Channel Islands National Park', ['NPS — no drones'])).addTo(npsLayer);
+  L.polygon([[34.13,-116.18],[34.13,-115.45],[33.78,-115.45],[33.43,-115.65],[33.43,-116.18],[33.85,-116.18]], fs(RED, 0.40)).bindPopup(pop('Joshua Tree National Park', ['NPS — no drones (high enforcement)'])).addTo(npsLayer);
+  L.polygon([[37.05,-117.85],[37.05,-116.55],[35.75,-116.20],[35.75,-117.05],[36.30,-117.85]], fs(RED, 0.40)).bindPopup(pop('Death Valley National Park', ['NPS — no drones'])).addTo(npsLayer);
+  L.polygon([[37.10,-118.85],[37.10,-118.30],[36.30,-118.20],[36.30,-118.85]], fs(RED, 0.40)).bindPopup(pop('Sequoia / Kings Canyon NP', ['NPS — no drones'])).addTo(npsLayer);
+  L.polygon([[35.50,-115.95],[35.50,-115.30],[34.75,-115.30],[34.75,-115.95]], fs(RED, 0.40)).bindPopup(pop('Mojave National Preserve', ['NPS — no drones'])).addTo(npsLayer);
+
+  const forestLayer = L.layerGroup();
+  L.polygon([[35.30,-120.00],[35.35,-119.30],[34.80,-119.10],[34.50,-119.40],[34.45,-119.85],[34.65,-120.25],[35.10,-120.20]], fs(YELLOW, 0.20)).bindPopup(pop('Los Padres National Forest', ['USFS — drones generally allowed in non-wilderness areas', 'Wilderness areas (Sespe, Matilija, etc.) prohibit drones', 'Avoid takeoff/landing within 100ft of trailheads/campgrounds'])).addTo(forestLayer);
+  L.polygon([[34.45,-118.55],[34.40,-117.65],[34.20,-117.55],[34.20,-117.85],[34.30,-118.30],[34.35,-118.55]], fs(YELLOW, 0.20)).bindPopup(pop('Angeles National Forest', ['USFS — generally allowed except wilderness'], 'Much of this is under LA Basin airspace — check Aloft')).addTo(forestLayer);
+  L.polygon([[34.35,-117.30],[34.40,-116.65],[34.05,-116.65],[33.95,-116.95],[34.05,-117.30]], fs(YELLOW, 0.20)).bindPopup(pop('San Bernardino National Forest', ['USFS — allowed except wilderness'])).addTo(forestLayer);
+  L.polygon([[33.75,-117.45],[33.75,-117.10],[33.45,-117.05],[33.45,-117.50]], fs(YELLOW, 0.20)).bindPopup(pop('Cleveland National Forest', ['USFS — allowed except wilderness'])).addTo(forestLayer);
+
+  const blmLayer = L.layerGroup();
+  L.polygon([[35.30,-120.10],[35.30,-119.55],[35.00,-119.45],[34.85,-119.70],[34.95,-120.05]], fs(GREEN, 0.30)).bindPopup(pop('Carrizo Plain National Monument', ['BLM — drones generally allowed', 'Class G airspace, vast open terrain', '~3hr drive from Burbank'])).addTo(blmLayer);
+  L.polygon([[35.40,-117.95],[35.40,-117.30],[34.85,-117.30],[34.85,-117.95]], fs(GREEN, 0.20)).bindPopup(pop('Mojave Desert BLM lands', ['BLM — generally permissive', 'Mostly Class G airspace'])).addTo(blmLayer);
+  L.polygon([[35.70,-117.50],[35.70,-117.25],[35.55,-117.25],[35.55,-117.50]], fs(GREEN, 0.30)).bindPopup(pop('Trona Pinnacles area', ['BLM National Natural Landmark', 'Drones allowed; check current rules'])).addTo(blmLayer);
+  L.polygon([[33.45,-116.55],[33.45,-116.05],[32.95,-116.10],[32.95,-116.55]], fs(GREEN, 0.20)).bindPopup(pop('Anza-Borrego Desert State Park', ['Notable CA state park exception — drones allowed in most of the park'], 'Verify current rules at park HQ — policy can change')).addTo(blmLayer);
+  L.polygon([[34.50,-119.30],[34.50,-119.15],[34.40,-119.15],[34.40,-119.30]], fs(GREEN, 0.30)).bindPopup(pop('Ojai valley', ['Class G airspace', 'No specific drone ordinance (verified)'], 'Avoid private property; respect signage')).addTo(blmLayer);
+
+  const pinsLayer = L.layerGroup();
+  const greenIcon = L.divIcon({ className: 'pin', html: '<div style="width:18px;height:18px;border-radius:50%;background:#16a34a;border:2px solid white;box-shadow:0 0 0 1px rgba(0,0,0,0.4);"></div>', iconSize: [18,18], iconAnchor: [9,9] });
+  const redIcon = L.divIcon({ className: 'pin', html: '<div style="width:18px;height:18px;border-radius:50%;background:#dc2626;border:2px solid white;box-shadow:0 0 0 1px rgba(0,0,0,0.4);"></div>', iconSize: [18,18], iconAnchor: [9,9] });
+
+  const spots = [
+    { lat: 34.4480, lng: -119.2429, name: 'Ojai (downtown vicinity)', notes: 'Home base — Class G airspace, no local ordinance', icon: 'green' },
+    { lat: 34.4297, lng: -119.3343, name: 'Lake Casitas — PROHIBITED', notes: 'CMWD Ordinance 20-01 explicitly bans drones at Lake Casitas. Past flights here were unenforced, not legal. Use Ventura County Comets RC field nearby instead.', icon: 'red' },
+    { lat: 34.7159, lng: -119.1751, name: 'Rose Valley (Los Padres NF)', notes: 'Open USFS land north of Ojai. Outside Sespe Wilderness boundary', icon: 'green' },
+    { lat: 35.1183, lng: -119.7836, name: 'Carrizo Plain', notes: 'BLM monument. Vast open Class G. ~3hr drive', icon: 'green' },
+    { lat: 35.6196, lng: -117.3645, name: 'Trona Pinnacles', notes: 'BLM. Otherworldly terrain. ~2.5hr drive', icon: 'green' },
+    { lat: 36.6042, lng: -118.1209, name: 'Alabama Hills (Lone Pine)', notes: 'BLM. Iconic Sierra backdrop. ~3.5hr but worth the drive', icon: 'green' },
+    { lat: 34.4886, lng: -118.3211, name: 'Vasquez Rocks (LA County)', notes: 'CAUTION: LA County prohibits drones in county parks. Looks great, do not launch', icon: 'red' }
+  ];
+
+  spots.forEach(s => {
+    const m = L.marker([s.lat, s.lng], { icon: s.icon === 'red' ? redIcon : greenIcon });
+    m.bindPopup(pop(s.name, [s.lat.toFixed(4) + ', ' + s.lng.toFixed(4), s.notes]));
+    m.addTo(pinsLayer);
+  });
+
+  const clubsLayer = L.layerGroup();
+  const blueIcon = L.divIcon({ className: 'pin', html: '<div style="width:22px;height:22px;border-radius:4px;background:#2563eb;border:2px solid white;box-shadow:0 0 0 1px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;color:white;font-size:10px;font-weight:700;letter-spacing:-0.5px;">RC</div>', iconSize: [22,22], iconAnchor: [11,11] });
+
+  const clubs = [
+    {
+      lat: 34.189, lng: -118.2173,
+      name: 'Glendale Field (Valley Flyers)',
+      address: '2001 Fox Hill Dr, Glendale, CA 91208',
+      website: 'https://www.valleyflyers.com/glendale-field/',
+      ama: '152',
+      guests: 'Members only — but you\'re a member.',
+      notes: 'Restrictions: .40 size nitro/electric fixed wing, helicopters, small drones. No FPV or racing. 400ft altitude limit.'
+    },
+    {
+      lat: 34.1739, lng: -118.4821,
+      name: 'Apollo XI Field (Valley Flyers)',
+      address: '6201 Woodley Ave, Encino, CA 91436',
+      website: 'https://www.valleyflyers.com/',
+      ama: '152',
+      guests: 'Guest pilots welcome with AMA card.',
+      notes: 'Same parent club as Glendale (AMA #152). 700+ members. Class D under VNY tower — letter of agreement in place.'
+    },
+    {
+      lat: 34.40944, lng: -119.357,
+      name: 'Ventura County Comets RC',
+      address: '3020 Casitas Pass Rd, Ventura, CA 93001',
+      website: 'https://www.vccomets.com/',
+      ama: '173',
+      guests: 'Guest pilots welcome with AMA card.',
+      notes: 'Lake Casitas. Multi-rotor permitted. Free instruction available.'
+    },
+    {
+      lat: 34.78, lng: -118.07,
+      name: 'Antelope Valley Tailwinds',
+      address: 'Challenger Way (10th St E) between Aves F & G, Lancaster, CA',
+      website: 'https://www.modelaircraft.org/club/antelope-valley-tailwinds-inc',
+      guests: 'AMA chartered. Contact club for guest policy.',
+      notes: '600\' x 40\' concrete runway, paved pit area. Mailing: PO Box 302, Lancaster CA 93548. ~1hr drive.'
+    },
+    {
+      lat: 35.14, lng: -118.43,
+      name: 'Tehachapi Crosswinds',
+      address: 'Corner of Abajo & Neely Ave, Tehachapi, CA',
+      website: 'https://www.tehachapicrosswinds.com/',
+      ama: '5113',
+      guests: 'Saturdays = "Freebee Flight Day" — newcomers fly free with instructor.',
+      notes: 'Mailing: PO Box 1283, Tehachapi CA 93581. ~2hr drive.'
+    },
+    {
+      lat: 34.40, lng: -117.21,
+      name: 'Victor Valley R/C Flyers',
+      address: '7000 Lake Arrowhead Rd, Hesperia, CA',
+      website: 'https://www.modelaircraft.org/club/victor-valley-r-c-flyers-inc',
+      guests: 'AMA chartered. Contact club for guest policy.',
+      notes: 'High desert location. ~1.5hr drive from Burbank.'
+    },
+    {
+      lat: 34.49, lng: -118.62,
+      name: 'Canyon Crosswinds',
+      address: 'Castaic, CA',
+      website: 'https://www.modelaircraft.org/club-finder',
+      guests: 'AMA chartered. Contact via AMA Club Finder for current details.',
+      notes: 'Closest non-LA Basin field — short drive from Burbank.'
+    },
+    {
+      lat: 34.18, lng: -118.92,
+      name: 'Conejo Valley Flyers',
+      address: 'Newbury Park, CA',
+      website: 'https://www.modelaircraft.org/club-finder',
+      guests: 'AMA chartered. Contact club for guest policy.',
+      notes: '400ft x 40ft synthetic-surface runway. ~30 min west of Burbank.'
+    },
+    {
+      lat: 34.27, lng: -118.78,
+      name: 'Simi Valley Flyers',
+      address: 'Simi Valley, CA',
+      website: 'https://www.modelaircraft.org/club-finder',
+      guests: 'AMA chartered. Contact club for guest policy.',
+      notes: '~30 min west of Burbank.'
+    },
+    {
+      lat: 34.0444, lng: -118.0497,
+      name: 'San Gabriel Valley RC League',
+      address: 'Whittier Narrows Regional Park, 1601 Rosemead Blvd S, El Monte, CA 91733',
+      website: 'https://www.modelaircraft.org/club-finder',
+      guests: 'AMA chartered. Contact club for guest policy.',
+      notes: 'Whittier Narrows is one of LA County\'s two designated drone-allowed parks. ~30-40 min east of Burbank.'
+    },
+    {
+      lat: 34.13, lng: -117.94,
+      name: 'Santa Fe Dam RC Modelers',
+      address: 'Santa Fe Dam Recreation Area, Duarte, CA',
+      website: 'https://www.modelaircraft.org/club-finder',
+      guests: 'AMA chartered. Contact club for guest policy.',
+      notes: 'Santa Fe Dam is the other LA County designated drone-allowed park. ~40 min east.'
+    },
+    {
+      lat: 33.97, lng: -117.65,
+      name: 'Pomona Valley Model Airplane Club',
+      address: 'Prado Field, Chino, CA (also Norton Field, San Bernardino)',
+      website: 'https://www.modelaircraft.org/club-finder',
+      guests: 'AMA chartered. Contact club for guest policy.',
+      notes: '800ft x 50ft asphalt runway with covered pit area at Prado.'
+    }
+  ];
+
+  const clubPop = (c) => {
+    let html = '<div class="pt">' + c.name + '</div>';
+    html += '<div class="pm"><strong>Address:</strong> ' + c.address + '</div>';
+    if (c.website) {
+      const display = c.website.replace(/^https?:\/\//, '').replace(/\/$/, '');
+      html += '<div class="pm"><strong>Web:</strong> <a href="' + c.website + '" target="_blank" rel="noopener">' + display + '</a></div>';
+    }
+    if (c.ama) html += '<div class="pm"><strong>AMA #:</strong> ' + c.ama + '</div>';
+    html += '<div class="pm"><strong>Guests:</strong> ' + c.guests + '</div>';
+    if (c.notes) html += '<div class="pm">' + c.notes + '</div>';
+    return html;
+  };
+
+  const dirEl = document.getElementById('club-directory');
+  const clubMarkers = [];
+
+  clubs.forEach((c, i) => {
+    const m = L.marker([c.lat, c.lng], { icon: blueIcon });
+    m.bindPopup(clubPop(c));
+    m.addTo(clubsLayer);
+    clubMarkers.push(m);
+
+    const card = document.createElement('div');
+    card.className = 'dir-card';
+    let html = '<p class="dir-name">' + c.name + '</p>';
+    html += '<p class="dir-meta">' + c.address + '</p>';
+    if (c.website) {
+      const display = c.website.replace(/^https?:\/\//, '').replace(/\/$/, '');
+      html += '<p class="dir-meta"><strong>Web:</strong> <a href="' + c.website + '" target="_blank" rel="noopener" onclick="event.stopPropagation();">' + display + '</a></p>';
+    }
+    if (c.ama) html += '<p class="dir-meta"><strong>AMA #:</strong> ' + c.ama + '</p>';
+    html += '<p class="dir-meta"><strong>Guests:</strong> ' + c.guests + '</p>';
+    card.innerHTML = html;
+    card.addEventListener('click', () => {
+      map.setView([c.lat, c.lng], 14);
+      m.openPopup();
+      document.getElementById('map').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    dirEl.appendChild(card);
+  });
+
+  airspaceLayer.addTo(map);
+  npsLayer.addTo(map);
+  forestLayer.addTo(map);
+  blmLayer.addTo(map);
+  pinsLayer.addTo(map);
+  clubsLayer.addTo(map);
+
+  const baseLayers = { 'Satellite': satelliteGroup, 'Terrain': terrain, 'Street': street };
+  const overlays = {
+    'Controlled airspace': airspaceLayer,
+    'National Parks': npsLayer,
+    'National Forests': forestLayer,
+    'Open / BLM lands': blmLayer,
+    'Verified spots': pinsLayer,
+    'RC clubs': clubsLayer
+  };
+  L.control.layers(baseLayers, overlays, { collapsed: false, position: 'topright' }).addTo(map);
+
+  document.getElementById('dm-detailed').addEventListener('click', function() {
+    this.classList.add('active');
+    document.getElementById('dm-simple').classList.remove('active');
+    [airspaceLayer, npsLayer, forestLayer, blmLayer, pinsLayer, clubsLayer].forEach(l => l.addTo(map));
+  });
+
+  document.getElementById('dm-simple').addEventListener('click', function() {
+    this.classList.add('active');
+    document.getElementById('dm-detailed').classList.remove('active');
+    map.removeLayer(airspaceLayer);
+    map.removeLayer(npsLayer);
+    map.removeLayer(forestLayer);
+    blmLayer.addTo(map);
+    pinsLayer.addTo(map);
+    clubsLayer.addTo(map);
+  });
+
+  document.getElementById('dm-ojai').addEventListener('click', function() {
+    map.setView([34.45, -119.24], 11);
+  });
+
+  document.getElementById('dm-wide').addEventListener('click', function() {
+    map.setView([34.6, -118.5], 7);
+  });
+})();
+</script>
+</body>
+</html>

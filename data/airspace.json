@@ -1,0 +1,96 @@
+[
+  {
+    "id": "la-basin",
+    "name": "LA Basin controlled airspace",
+    "shape": "polygon",
+    "geometry": [[34.30, -118.95], [34.32, -118.30], [34.20, -117.85], [34.05, -117.55], [33.85, -117.55], [33.65, -117.65], [33.55, -118.05], [33.55, -118.45], [33.75, -118.85], [34.05, -118.95]],
+    "popup": {
+      "title": "LA Basin controlled airspace",
+      "lines": [
+        "LAX Class B + BUR/VNY/LGB/SNA Class C/D",
+        "Drone flight requires LAANC authorization (often denied at low altitudes)"
+      ],
+      "warning": "Approximate boundary — verify with Aloft"
+    },
+    "verified": "2026-04-18",
+    "source": null
+  },
+  {
+    "id": "sba-class-c",
+    "name": "Santa Barbara (SBA) Class C",
+    "shape": "circle",
+    "geometry": { "center": [34.4262, -119.8403], "radiusMeters": 8000 },
+    "popup": {
+      "title": "Santa Barbara (SBA) Class C",
+      "lines": ["LAANC authorization required"],
+      "warning": null
+    },
+    "verified": "2026-04-18",
+    "source": null
+  },
+  {
+    "id": "oxr-class-d",
+    "name": "Oxnard (OXR) Class D",
+    "shape": "circle",
+    "geometry": { "center": [34.2008, -119.2073], "radiusMeters": 6500 },
+    "popup": {
+      "title": "Oxnard (OXR) Class D",
+      "lines": ["LAANC authorization required"],
+      "warning": null
+    },
+    "verified": "2026-04-18",
+    "source": null
+  },
+  {
+    "id": "bfl-class-c",
+    "name": "Bakersfield (BFL) Class C",
+    "shape": "circle",
+    "geometry": { "center": [35.4336, -119.0568], "radiusMeters": 8000 },
+    "popup": {
+      "title": "Bakersfield (BFL) Class C",
+      "lines": ["LAANC authorization required"],
+      "warning": null
+    },
+    "verified": "2026-04-18",
+    "source": null
+  },
+  {
+    "id": "psp-class-d",
+    "name": "Palm Springs (PSP) Class D",
+    "shape": "circle",
+    "geometry": { "center": [33.8297, -116.5067], "radiusMeters": 7000 },
+    "popup": {
+      "title": "Palm Springs (PSP) Class D",
+      "lines": ["LAANC authorization required"],
+      "warning": null
+    },
+    "verified": "2026-04-18",
+    "source": null
+  },
+  {
+    "id": "san-class-b",
+    "name": "San Diego (SAN) Class B",
+    "shape": "circle",
+    "geometry": { "center": [32.7338, -117.1933], "radiusMeters": 18000 },
+    "popup": {
+      "title": "San Diego (SAN) Class B",
+      "lines": ["Recreational flight heavily restricted"],
+      "warning": null
+    },
+    "verified": "2026-04-18",
+    "source": null
+  },
+  {
+    "id": "ont-class-c",
+    "name": "Ontario (ONT) Class C",
+    "shape": "circle",
+    "geometry": { "center": [34.0560, -117.6012], "radiusMeters": 9000 },
+    "popup": {
+      "title": "Ontario (ONT) Class C",
+      "lines": ["LAANC authorization required"],
+      "warning": null
+    },
+    "verified": "2026-04-18",
+    "source": null
+  }
+]

@@ -1,0 +1,85 @@
+[
+  {
+    "id": "carrizo-plain",
+    "name": "Carrizo Plain National Monument",
+    "shape": "polygon",
+    "geometry": [[35.30, -120.10], [35.30, -119.55], [35.00, -119.45], [34.85, -119.70], [34.95, -120.05]],
+    "opacity": 0.30,
+    "popup": {
+      "title": "Carrizo Plain National Monument",
+      "lines": [
+        "BLM — drones generally allowed",
+        "Class G airspace, vast open terrain",
+        "~3hr drive from Burbank"
+      ],
+      "warning": null
+    },
+    "verified": "2026-04-18",
+    "source": null
+  },
+  {
+    "id": "mojave-desert-blm",
+    "name": "Mojave Desert BLM lands",
+    "shape": "polygon",
+    "geometry": [[35.40, -117.95], [35.40, -117.30], [34.85, -117.30], [34.85, -117.95]],
+    "opacity": 0.20,
+    "popup": {
+      "title": "Mojave Desert BLM lands",
+      "lines": [
+        "BLM — generally permissive",
+        "Mostly Class G airspace"
+      ],
+      "warning": null
+    },
+    "verified": "2026-04-18",
+    "source": null
+  },
+  {
+    "id": "trona-pinnacles",
+    "name": "Trona Pinnacles area",
+    "shape": "polygon",
+    "geometry": [[35.70, -117.50], [35.70, -117.25], [35.55, -117.25], [35.55, -117.50]],
+    "opacity": 0.30,
+    "popup": {
+      "title": "Trona Pinnacles area",
+      "lines": [
+        "BLM National Natural Landmark",
+        "Drones allowed; check current rules"
+      ],
+      "warning": null
+    },
+    "verified": "2026-04-18",
+    "source": null
+  },
+  {
+    "id": "anza-borrego",
+    "name": "Anza-Borrego Desert State Park",
+    "shape": "polygon",
+    "geometry": [[33.45, -116.55], [33.45, -116.05], [32.95, -116.10], [32.95, -116.55]],
+    "opacity": 0.20,
+    "popup": {
+      "title": "Anza-Borrego Desert State Park",
+      "lines": ["Notable CA state park exception — drones allowed in most of the park"],
+      "warning": "Verify current rules at park HQ — policy can change"
+    },
+    "verified": "2026-04-18",
+    "source": null
+  },
+  {
+    "id": "ojai-valley",
+    "name": "Ojai valley",
+    "shape": "polygon",
+    "geometry": [[34.50, -119.30], [34.50, -119.15], [34.40, -119.15], [34.40, -119.30]],
+    "opacity": 0.30,
+    "popup": {
+      "title": "Ojai valley",
+      "lines": [
+        "Class G airspace",
+        "No specific drone ordinance (verified)"
+      ],
+      "warning": "Avoid private property; respect signage"
+    },
+    "verified": "2026-04-18",
+    "source": null
+  }
+]

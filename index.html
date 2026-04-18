@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SoCal Drone Zones — Seth's Map</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="header">
+  <p class="title">SoCal drone zones — within ~3 hours of Burbank</p>
+  <p class="subtitle">Toggle layers on the map. Click any zone or pin for details. Always verify with Aloft + on-site signage.</p>
+</div>
+
+<div class="controls">
+  <button class="btn active" id="dm-detailed">Detailed view</button>
+  <button class="btn" id="dm-simple">Simple (green only)</button>
+  <button class="btn" id="dm-ojai">Zoom to Ojai</button>
+  <button class="btn" id="dm-wide">Full region</button>
+</div>
+
+<div id="map"></div>
+
+<div class="legend">
+  <div class="legend-item"><span class="swatch" style="background:#dc2626;opacity:0.6"></span>No-fly zone</div>
+  <div class="legend-item"><span class="swatch" style="background:#eab308;opacity:0.6"></span>Forest (allowed, check)</div>
+  <div class="legend-item"><span class="swatch" style="background:#16a34a;opacity:0.6"></span>BLM / open</div>
+  <div class="legend-item"><span class="swatch swatch-circle" style="background:#16a34a"></span>Verified launch</div>
+  <div class="legend-item"><span class="swatch swatch-circle" style="background:#dc2626"></span>Looks good but no</div>
+  <div class="legend-item"><span class="swatch" style="background:#2563eb"></span>RC club field</div>
+</div>
+
+<div class="directory">
+  <p class="dir-title">RC club directory (AMA-chartered fields within ~3hr of Burbank)</p>
+  <div class="dir-grid" id="club-directory"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

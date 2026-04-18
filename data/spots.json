@@ -1,0 +1,72 @@
+[
+  {
+    "id": "ojai-downtown",
+    "name": "Ojai (downtown vicinity)",
+    "lat": 34.4480,
+    "lng": -119.2429,
+    "status": "ok",
+    "notes": "Home base — Class G airspace, no local ordinance",
+    "verified": "2026-04-18",
+    "sources": []
+  },
+  {
+    "id": "lake-casitas",
+    "name": "Lake Casitas — PROHIBITED",
+    "lat": 34.4297,
+    "lng": -119.3343,
+    "status": "prohibited",
+    "notes": "CMWD Ordinance 20-01 explicitly bans drones at Lake Casitas. Past flights here were unenforced, not legal. Use Ventura County Comets RC field nearby instead.",
+    "verified": "2026-04-18",
+    "sources": []
+  },
+  {
+    "id": "rose-valley",
+    "name": "Rose Valley (Los Padres NF)",
+    "lat": 34.7159,
+    "lng": -119.1751,
+    "status": "ok",
+    "notes": "Open USFS land north of Ojai. Outside Sespe Wilderness boundary",
+    "verified": "2026-04-18",
+    "sources": []
+  },
+  {
+    "id": "carrizo-plain-spot",
+    "name": "Carrizo Plain",
+    "lat": 35.1183,
+    "lng": -119.7836,
+    "status": "ok",
+    "notes": "BLM monument. Vast open Class G. ~3hr drive",
+    "verified": "2026-04-18",
+    "sources": []
+  },
+  {
+    "id": "trona-pinnacles-spot",
+    "name": "Trona Pinnacles",
+    "lat": 35.6196,
+    "lng": -117.3645,
+    "status": "ok",
+    "notes": "BLM. Otherworldly terrain. ~2.5hr drive",
+    "verified": "2026-04-18",
+    "sources": []
+  },
+  {
+    "id": "alabama-hills",
+    "name": "Alabama Hills (Lone Pine)",
+    "lat": 36.6042,
+    "lng": -118.1209,
+    "status": "ok",
+    "notes": "BLM. Iconic Sierra backdrop. ~3.5hr but worth the drive",
+    "verified": "2026-04-18",
+    "sources": []
+  },
+  {
+    "id": "vasquez-rocks",
+    "name": "Vasquez Rocks (LA County)",
+    "lat": 34.4886,
+    "lng": -118.3211,
+    "status": "prohibited",
+    "notes": "CAUTION: LA County prohibits drones in county parks. Looks great, do not launch",
+    "verified": "2026-04-18",
+    "sources": []
+  }
+]

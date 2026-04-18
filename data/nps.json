@@ -1,0 +1,83 @@
+[
+  {
+    "id": "santa-monica-mountains-nra",
+    "name": "Santa Monica Mountains NRA",
+    "shape": "polygon",
+    "geometry": [[34.18, -118.95], [34.18, -118.55], [34.10, -118.50], [34.00, -118.55], [34.00, -118.95], [34.10, -119.10]],
+    "popup": {
+      "title": "Santa Monica Mountains NRA",
+      "lines": [
+        "National Park Service unit",
+        "Drone takeoff/landing prohibited (36 CFR 1.5)"
+      ],
+      "warning": null
+    },
+    "verified": "2026-04-18",
+    "source": null
+  },
+  {
+    "id": "channel-islands-np",
+    "name": "Channel Islands National Park",
+    "shape": "polygon",
+    "geometry": [[34.05, -119.95], [34.05, -119.35], [33.85, -119.35], [33.85, -119.95]],
+    "popup": {
+      "title": "Channel Islands National Park",
+      "lines": ["NPS — no drones"],
+      "warning": null
+    },
+    "verified": "2026-04-18",
+    "source": null
+  },
+  {
+    "id": "joshua-tree-np",
+    "name": "Joshua Tree National Park",
+    "shape": "polygon",
+    "geometry": [[34.13, -116.18], [34.13, -115.45], [33.78, -115.45], [33.43, -115.65], [33.43, -116.18], [33.85, -116.18]],
+    "popup": {
+      "title": "Joshua Tree National Park",
+      "lines": ["NPS — no drones (high enforcement)"],
+      "warning": null
+    },
+    "verified": "2026-04-18",
+    "source": null
+  },
+  {
+    "id": "death-valley-np",
+    "name": "Death Valley National Park",
+    "shape": "polygon",
+    "geometry": [[37.05, -117.85], [37.05, -116.55], [35.75, -116.20], [35.75, -117.05], [36.30, -117.85]],
+    "popup": {
+      "title": "Death Valley National Park",
+      "lines": ["NPS — no drones"],
+      "warning": null
+    },
+    "verified": "2026-04-18",
+    "source": null
+  },
+  {
+    "id": "sequoia-kings-canyon-np",
+    "name": "Sequoia / Kings Canyon NP",
+    "shape": "polygon",
+    "geometry": [[37.10, -118.85], [37.10, -118.30], [36.30, -118.20], [36.30, -118.85]],
+    "popup": {
+      "title": "Sequoia / Kings Canyon NP",
+      "lines": ["NPS — no drones"],
+      "warning": null
+    },
+    "verified": "2026-04-18",
+    "source": null
+  },
+  {
+    "id": "mojave-national-preserve",
+    "name": "Mojave National Preserve",
+    "shape": "polygon",
+    "geometry": [[35.50, -115.95], [35.50, -115.30], [34.75, -115.30], [34.75, -115.95]],
+    "popup": {
+      "title": "Mojave National Preserve",
+      "lines": ["NPS — no drones"],
+      "warning": null
+    },
+    "verified": "2026-04-18",
+    "source": null
+  }
+]
