@@ -5,7 +5,7 @@
     "lat": 34.4480,
     "lng": -119.2429,
     "status": "ok",
-    "notes": "Home base — Class G airspace, no local ordinance",
+    "notes": "Class G airspace, no local drone ordinance",
     "verified": "2026-04-18",
     "sources": []
   },
@@ -15,7 +15,7 @@
     "lat": 34.4297,
     "lng": -119.3343,
     "status": "prohibited",
-    "notes": "CMWD Ordinance 20-01 explicitly bans drones at Lake Casitas. Past flights here were unenforced, not legal. Use Ventura County Comets RC field nearby instead.",
+    "notes": "CMWD Ordinance 20-01 explicitly bans drones at Lake Casitas. Use the Ventura County Comets RC field nearby instead.",
     "verified": "2026-04-18",
     "sources": []
   },
